@@ -1,65 +1,144 @@
-import Image from "next/image";
+// src/app/page.tsx
+"use client";
 
-export default function Home() {
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link'; // Link 컴포넌트 임포트
+import { mockMemories } from '@/lib/memories';
+import { Memory } from '@/types';
+
+const bookColors = [
+  'bg-blue-700', 'bg-green-700', 'bg-red-700', 'bg-yellow-700', 'bg-indigo-700',
+  'bg-purple-700', 'bg-pink-700', 'bg-teal-700',
+];
+
+export default function HomePage() {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sharedInfo, setSharedInfo] = useState<{ id: string, password: string } | null>(null)
+  const [isSharing, setIsSharing] = useState(false)
+  const selectedMemory = selectedId ? mockMemories.find(m => m.id === selectedId) : null;
+
+  const handleShare = async (memoryId: string) => {
+    setIsSharing(true)
+    setSharedInfo(null)
+
+    try {
+      const response = await fetch(`/api/share`, {
+        method: 'POST',
+        headers: { 'Content-Type': `application/json` },
+        body: JSON.stringify({ memoryId })
+      })
+      if (!response.ok) throw new Error('공유링크 생성 실패!')
+      const data = await response.json()
+      setSharedInfo({ id: data.id, password: data.oneTimePassword })
+    } catch (e) {
+      console.error(e)
+      alert("공유링크 생성 실패!")
+    } finally {
+      setIsSharing(false)
+    }
+  }
+  const handleCloseDetail = () => {
+    setSelectedId(null)
+    setSharedInfo(null)
+  }
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="flex min-h-screen flex-col items-center bg-gray-900 text-white p-4 sm:p-8
+      overflow-hidden">
+      <h1 className="text-4xl sm:text-5xl font-extrabold my-8 sm:my-12 text-center tracking-tight">
+        나의 기억 보관함
+      </h1>
+
+      {/* 새 기억 추가 버튼 */}
+      <Link href="/new" passHref>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="mb-8 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg
+      shadow-lg transition-colors duration-300"
+        >
+          새 기억 추가
+        </motion.button>
+      </Link>
+
+      {/* 책장 컨테이너 */}
+      <div className="relative w-full max-w-6xl p-4">
+        <div className="flex items-end justify-center gap-4 h-80 border-b-8 border-yellow-900
+      bg-gray-800/30 rounded-t-lg p-4">
+          {mockMemories.map((memory: Memory, index: number) => (
+            <motion.div
+              key={memory.id}
+              layoutId={`book-${memory.id}`}
+              onClick={() => setSelectedId(memory.id)}
+              className={`
+                        relative w-12 h-64 rounded-t-md shadow-lg cursor-pointer group
+                        transform transition-all duration-300 origin-bottom hover:-translate-y-2 hover:scale-
+      105
+                        ${bookColors[index % bookColors.length]}
+                      `}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              <div className="absolute inset-0 flex items-center justify-center p-1">
+                <h2 className="text-white font-semibold text-sm [writing-mode:vertical-rl] transform
+      rotate-180 whitespace-nowrap overflow-hidden text-ellipsis opacity-0 group-hover:opacity-100
+      transition-opacity duration-300">
+                  {memory.title}
+                </h2>
+              </div>
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black/20
+      via-transparent to-black/10 rounded-t-md"></div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* 선택된 책을 보여주는 부분 (AnimatePresence 사용) */}
+      <AnimatePresence>
+        {selectedMemory && (
+          <motion.div
+            layoutId={`book-${selectedMemory.id}`}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4
+      z-50"
+            onClick={() => setSelectedId(null)}
+          >
+            <div
+              className="relative w-full max-w-3xl h-auto max-h-[90vh] bg-white rounded-lg shadow-2xl
+      flex flex-col md:flex-row overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              {/* 이미지 영역 */}
+              <div className="w-full md:w-1/2 h-64 md:h-auto">
+                <img src={selectedMemory.imageUrl} alt={selectedMemory.title} className="w-full h-full
+      object-cover" />
+              </div>
+              {/* 텍스트 콘텐츠 영역 */}
+              <div className="w-full md:w-1/2 p-6 overflow-y-auto">
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedMemory.title}</h2>
+                <p className="text-sm text-gray-500 mb-6">{new Date(selectedMemory.createdAt).
+                  toLocaleDateString('ko-KR')} 에 남긴 기억</p>
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedMemory.
+                  content}</p>
+
+                <div className='mt-6 pt-4 border-t'>
+                  <button onClick={() => handleShare(selectedMemory.id)} disabled={isSharing} className='w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors duration-300 disabled:bg-gray-400'>
+                    {isSharing ? '생성중입니다...' : '이 기억 공유하기'}
+                  </button>
+                  {sharedInfo && (
+                    <div className='mt-4 p-3 bg-gray-100 rounded-md text-sm text-gray-800'>
+                      <p className='font-semibold'>공유 링크가 생성되었습니다. : </p>
+                      <input type="text" readOnly value={`${window.location.origin}/share/${sharedInfo.id}`} className='w-full p-2 mt-2 bg-white border rounded-md' />
+                      <p className='mt-2 font-semibold'>1회용 패스워드 : </p>
+                      <input type="text" readOnly value={sharedInfo.password} className='w-full p-2 mt-2 bg-white border rounded-md' />
+                    </div>
+                  )}
+                </div>
+              </div>
+              {/* 닫기 버튼 */}
+              <button onClick={handleCloseDetail} className="absolute top-4 right-4
+      text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
   );
 }
