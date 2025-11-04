@@ -1,11 +1,11 @@
 // src/app/page.tsx
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link'; // Link 컴포넌트 임포트
-import { mockMemories } from '@/lib/memories';
 import { Memory } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 const bookColors = [
   'bg-blue-700', 'bg-green-700', 'bg-red-700', 'bg-yellow-700', 'bg-indigo-700',
@@ -13,11 +13,37 @@ const bookColors = [
 ];
 
 export default function HomePage() {
+  const [memories, setMemories] = useState<Memory[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sharedInfo, setSharedInfo] = useState<{ id: string, password: string } | null>(null)
   const [isSharing, setIsSharing] = useState(false)
-  const selectedMemory = selectedId ? mockMemories.find(m => m.id === selectedId) : null;
 
+  useEffect(() => {
+    const fetchMemories = async () => {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('memories')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (error) {
+        console.error('기억을 가져오는중 오류가 발생했어요.')
+        setMemories([])
+      } else {
+        const formattedMemories: Memory[] = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          content: item.content,
+          imageUrl: item.image_url,
+          createdAt: item.created_at
+        }))
+        setMemories(formattedMemories)
+      }
+      setLoading(false)
+    }
+    fetchMemories()
+  }, [])
+  const selectedMemory = selectedId ? memories.find(memory => memory.id === selectedId) : null
   const handleShare = async (memoryId: string) => {
     setIsSharing(true)
     setSharedInfo(null)
@@ -61,35 +87,33 @@ export default function HomePage() {
         </motion.button>
       </Link>
 
-      {/* 책장 컨테이너 */}
-      <div className="relative w-full max-w-6xl p-4">
-        <div className="flex items-end justify-center gap-4 h-80 border-b-8 border-yellow-900
-      bg-gray-800/30 rounded-t-lg p-4">
-          {mockMemories.map((memory: Memory, index: number) => (
-            <motion.div
-              key={memory.id}
-              layoutId={`book-${memory.id}`}
-              onClick={() => setSelectedId(memory.id)}
-              className={`
-                        relative w-12 h-64 rounded-t-md shadow-lg cursor-pointer group
-                        transform transition-all duration-300 origin-bottom hover:-translate-y-2 hover:scale-
-      105
-                        ${bookColors[index % bookColors.length]}
-                      `}
-            >
-              <div className="absolute inset-0 flex items-center justify-center p-1">
-                <h2 className="text-white font-semibold text-sm [writing-mode:vertical-rl] transform
-      rotate-180 whitespace-nowrap overflow-hidden text-ellipsis opacity-0 group-hover:opacity-100
-      transition-opacity duration-300">
-                  {memory.title}
-                </h2>
-              </div>
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black/20
-      via-transparent to-black/10 rounded-t-md"></div>
-            </motion.div>
-          ))}
+
+      {loading ? (
+        <p className='text-lg text-gray-400'>기억들을 불러오고 있어요...</p>
+      ) : memories.length === 0 ? (
+        <p className='text-lg text-gray-400'>아직 보관된 기억이 없어요! 새로운 기억을 추가해보세요!</p>
+      ) : (
+        <div className='relative w-full max-w-6xl p-4'>
+          <div className='flex items-end justify-center gap-4 h-80 border-b-8 border-yellow-900 bg-gray-800/30 rounded-t-lg p-4'>
+            {memories.map((memory: Memory, index: numver) => (
+              <motion.div
+                key={memory.id}
+                layoutId={`book-${memory.id}`}
+                onClick={() => setSelectedId(memory.id)}
+                className={`relative w-12 h-64 rounded-t-md shadow-lg cursor-pointer group transform transition-all duration-300 origin-bottom hover:-translate-y-2 hover:scale-105 ${bookColors[index % bookColors.length]}`}>
+                <div className='absolute inset-0 flex items-center justify-center p-1'>
+                  <h2 className="text-white font-semibold text-sm [writing-mode:vertical-rl]
+       transform rotate-180 whitespace-nowrap overflow-hidden text-ellipsis opacity-0 group-hover:opacity-100
+       transition-opacity duration-300">
+                    {memory.title}
+                  </h2>
+                </div>
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black/20
+       via-transparent to-black/10 rounded-t-md"></div>
+              </motion.div>
+            ))}</div>
         </div>
-      </div>
+      )}
 
       {/* 선택된 책을 보여주는 부분 (AnimatePresence 사용) */}
       <AnimatePresence>
