@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
-import { mockSharedLinks } from "@/lib/shared-links"
-import { SharedLink } from "@/types"
+import { supabase } from "@/lib/supabase"
 
 export async function POST(request: Request): Promise<NextResponse> {
     try {
@@ -13,29 +12,28 @@ export async function POST(request: Request): Promise<NextResponse> {
             )
         }
 
-        const shareId = crypto.randomUUID()
         const oneTimePassword = Math.floor(
             100000 + Math.random() * 900000
         ).toString()
 
-        const newSharedLink: SharedLink = {
-            id: shareId,
-            memoryId,
-            oneTimePassword,
-            isUsed: false,
-            createdAt: new Date().toISOString(),
+        const { data, error } = await supabase
+            .from("shared_links")
+            .insert({
+                memory_id: memoryId,
+                one_time_password: oneTimePassword,
+            })
+            .select()
+            .single()
+
+        if (error) {
+            throw new Error("공유 링크 생성에 실패했어요!")
         }
 
-        mockSharedLinks.push(newSharedLink)
-        console.log("새 공유 링크가 생성되었어요. : ", newSharedLink)
-        console.log("현재 모든 공유 링크에요. : ", mockSharedLinks)
-
         return NextResponse.json({
-            id: newSharedLink.id,
-            oneTimePassword: newSharedLink.oneTimePassword,
+            id: data.id,
+            oneTimePassword: data.one_time_password,
         })
     } catch (e) {
-        console.log("공유링크 생성 오류! : ", e)
         return NextResponse.json(
             { message: "서버오류가 발생했어요." },
             { status: 500 }

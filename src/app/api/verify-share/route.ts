@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
-import { mockSharedLinks } from "@/lib/shared-links"
-import { mockMemories } from "@/lib/memories"
+import { supabase } from "@/lib/supabase"
 
 export async function POST(request: Request): Promise<NextResponse> {
     try {
@@ -12,41 +11,60 @@ export async function POST(request: Request): Promise<NextResponse> {
                 { status: 400 }
             )
         }
-        const SharedLink = mockSharedLinks.find((link) => link.id === shareId)
 
-        if (!SharedLink) {
+        const { data: sharedLink, error: findError } = await supabase
+            .from("shared_links")
+            .select("*")
+            .eq("id", shareId)
+            .single()
+
+        if (findError || !sharedLink) {
             return NextResponse.json(
                 { message: "유효하지 않은 링크입니다." },
                 { status: 404 }
             )
         }
-        if (SharedLink.isUsed) {
+        if (sharedLink.isUsed) {
             return NextResponse.json(
                 { message: "이미 사용된 링크입니다." },
                 { status: 410 }
             )
         }
-        if (SharedLink.oneTimePassword !== password) {
+        if (sharedLink.oneTimePassword !== password) {
             return NextResponse.json(
                 { message: "패스워드가 일치하지 않습니다." },
                 { status: 401 }
             )
         }
+        const { error: updateError } = await supabase
+            .from("shared_link")
+            .update({ is_used: true })
+            .eq("id", shareId)
 
-        SharedLink.isUsed = true
-        const memory = mockMemories.find(
-            (memory) => memory.id === SharedLink.memoryId
-        )
+        if (updateError) {
+            throw new Error("링크 상태 업데이트에 실패했어요..")
+        }
 
-        if (!memory) {
+        const { data: memory, error: memoryError } = await supabase
+            .from("memories")
+            .select("*")
+            .eq("id", sharedLink.memory_id)
+            .single()
+
+        if (memoryError || !memory) {
             return NextResponse.json(
                 { message: "공유된 기억을 찾을 수 없습니다." },
                 { status: 404 }
             )
         }
-        return NextResponse.json(memory)
+        return NextResponse.json({
+            id: memory.id,
+            title: memory.title,
+            content: memory.content,
+            imageUrl: memory.image_url,
+            createdAt: memory.created_at,
+        })
     } catch (e) {
-        console.error("공유 검증 오류입니다 : ", e)
         return NextResponse.json(
             { message: "서버 오류가 발생했습니다." },
             { status: 500 }
