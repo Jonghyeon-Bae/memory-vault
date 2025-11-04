@@ -37,7 +37,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             )
         }
         const { error: updateError } = await supabase
-            .from("shared_link")
+            .from("shared_links")
             .update({ is_used: true })
             .eq("id", shareId)
 
