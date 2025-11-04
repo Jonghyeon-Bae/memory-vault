@@ -2,8 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { mockMemories } from "@/lib/memories"
-import { Memory } from "@/types"
+import { supabase } from "@/lib/supabase"
 
 export default function NewMemoryPage() {
     const [title, setTitle] = useState('')
@@ -34,15 +33,25 @@ export default function NewMemoryPage() {
             const newBlob = await response.json();
             const imageUrl = newBlob.url
 
-            const newMemory: Memory = {
-                id: String(mockMemories.length + 1),
-                title,
-                content,
-                imageUrl,
-                createdAt: new Date().toISOString()
+            const { data, error } = await supabase
+                .from('memories')
+                .insert([
+                    { title, content, image_url: imageUrl }
+                ])
+                .select()
+
+            if (error) {
+                throw new Error('기억 저장에 실패했어요. : ' + error.message)
             }
-            mockMemories.push(newMemory)
-            console.log('새 기억 추가됨:', newMemory)
+            alert('새 기억이 저장되었어요.')
+
+            setTitle('')
+            setContent('')
+            setFile(null)
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+            }
 
             router.push('/')
         } catch (e) {
