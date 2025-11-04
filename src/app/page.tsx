@@ -95,7 +95,7 @@ export default function HomePage() {
       ) : (
         <div className='relative w-full max-w-6xl p-4'>
           <div className='flex items-end justify-center gap-4 h-80 border-b-8 border-yellow-900 bg-gray-800/30 rounded-t-lg p-4'>
-            {memories.map((memory: Memory, index: numver) => (
+            {memories.map((memory: Memory, index: number) => (
               <motion.div
                 key={memory.id}
                 layoutId={`book-${memory.id}`}
