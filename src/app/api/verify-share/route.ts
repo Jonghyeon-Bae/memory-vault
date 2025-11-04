@@ -30,12 +30,6 @@ export async function POST(request: Request): Promise<NextResponse> {
                 { status: 410 }
             )
         }
-        console.log(
-            "DB의 비밀번호:",
-            sharedLink.one_time_password,
-            typeof sharedLink.one_time_password
-        )
-        console.log("클라의 비밀번호:", password, typeof password)
         if (sharedLink.one_time_password !== password) {
             return NextResponse.json(
                 { message: "패스워드가 일치하지 않습니다." },
