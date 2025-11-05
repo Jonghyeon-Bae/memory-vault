@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabase, supabaseAdmin } from "@/lib/supabase"
 
 export async function POST(request: Request): Promise<NextResponse> {
     try {
@@ -36,7 +36,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                 { status: 401 }
             )
         }
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseAdmin
             .from("shared_links")
             .update({ is_used: true })
             .eq("id", shareId)
