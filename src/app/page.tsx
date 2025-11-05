@@ -95,8 +95,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="dream-background flex min-h-screen flex-col items-center text-white p-4 sm:p-8
- overflow-hidden">
+    <main className="dream-background flex min-h-screen flex-col items-center text-white p-4 sm:p-8 overflow-hidden">
       <h1
         className="text-5xl sm:text-6xl font-normal my-8 sm:my-12 text-center tracking-wider"
         style={{ textShadow: '0 0 8px rgba(255, 255, 255, 0.4), 0 0 12px rgba(180, 180, 255, 0.3)' }}
@@ -105,9 +104,7 @@ export default function HomePage() {
       </h1>
 
       <Link href="/new" passHref>
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mb-8 px-6
- py-3 bg-amber-700 hover:bg-amber-800 text-white font-bold rounded-lg shadow-lg transition-colors
- duration-300">
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mb-8 px-6 py-3 bg-amber-700 hover:bg-amber-800 text-white font-bold rounded-lg shadow-lg transition-colors duration-300">
           새 기억 추가
         </motion.button>
       </Link>
@@ -118,18 +115,14 @@ export default function HomePage() {
         <p className="text-lg">아직 보관된 기억이 없습니다. 새로운 기억을 추가해 보세요!</p>
       ) : (
         <div className="w-full max-w-7xl flex items-center justify-center gap-4">
-          <motion.button onClick={handlePrev} disabled={currentPage === 0} className="p-2
- rounded-full bg-black/20 hover:bg-black/40 disabled:opacity-30 disabled:cursor-not-allowed" whileTap={{
-              scale: 0.9
-            }}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24
- 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15
- 19l-7-7 7-7" /></svg>
+          <motion.button onClick={handlePrev} disabled={currentPage === 0} className="p-2 rounded-full bg-black/20 hover:bg-black/40 disabled:opacity-30 disabled:cursor-not-allowed" whileTap={{
+            scale: 0.9
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           </motion.button>
 
           <div className="relative w-full p-4 overflow-hidden">
-            <div className="flex items-end justify-center gap-4 h-80 border-b-[16px] border-t-[16px]
- border-[#4a2c2a] bg-black/30 rounded-lg p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.6)]">
+            <div className="flex items-end justify-center gap-4 h-80 border-b-[16px] border-t-[16px] border-[#4a2c2a] bg-black/30 rounded-lg p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.6)]">
               <AnimatePresence mode="popLayout">
                 {displayedMemories.map((memory) => (
                   <motion.div
@@ -150,10 +143,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          <motion.button onClick={handleNext} disabled={currentPage >= totalPages - 1} className="p-2
- rounded-full bg-black/20 hover:bg-black/40 disabled:opacity-30 disabled:cursor-not-allowed" whileTap={{
-              scale: 0.9
-            }}>
+          <motion.button onClick={handleNext} disabled={currentPage >= totalPages - 1} className="p-2 rounded-full bg-black/20 hover:bg-black/40 disabled:opacity-30 disabled:cursor-not-allowed" whileTap={{
+            scale: 0.9
+          }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24
  24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7
  7-7 7" /></svg>
@@ -163,38 +155,30 @@ export default function HomePage() {
 
       <AnimatePresence>
         {selectedMemory && (
-          <motion.div layoutId={`book-${selectedMemory.id}`} className="fixed inset-0 bg-black/50
- backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={handleCloseDetail}>
-            <div className="relative w-full max-w-3xl h-auto max-h-[90vh] bg-white rounded-lg
- shadow-2xl flex flex-col md:flex-row overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              <div className="w-full md:w-1/2 h-64 md:h-auto"><img src={selectedMemory.imageUrl} alt=
-                {selectedMemory.title} className="w-full h-full object-cover" /></div>
+          <motion.div layoutId={`book-${selectedMemory.id}`} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={handleCloseDetail}>
+            <div className="relative w-full max-w-3xl h-auto max-h-[90vh] bg-white rounded-lg shadow-2xl flex flex-col md:flex-row overflow-hidden" onClick={(e) => e.stopPropagation()}>
+              <div className="w-full md:w-1/2 h-64 md:h-auto"><img src={selectedMemory.imageUrl} alt={selectedMemory.title} className="w-full h-full object-cover" /></div>
               <div className="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedMemory.title}</h2>
                 <p className="text-sm text-gray-500 mb-6">{new Date(selectedMemory.createdAt).
                   toLocaleDateString('ko-KR')} 에 남겨진 기억</p>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap flex-grow"
-                >{selectedMemory.content}</p>
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap flex-grow">{selectedMemory.content}</p>
                 <div className="mt-6 pt-4 border-t">
                   <button onClick={() => handleShare(selectedMemory.id)} disabled={isSharing}
-                    className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md
-       transition-colors duration-300 disabled:bg-gray-400">
+                    className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors duration-300 disabled:bg-gray-400">
                     {isSharing ? '생성 중...' : '이 기억 공유하기'}
                   </button>
                   {shareInfo && (
                     <div className="mt-4 p-3 bg-gray-100 rounded-md text-sm text-gray-800">
                       <p className="font-semibold">공유 링크가 생성되었습니다:</p>
-                      <input type="text" readOnly value={`${window.location.origin}/share/
-       ${shareInfo.id}`} className="w-full p-2 mt-2 bg-white border rounded-md" />
+                      <input type="text" readOnly value={`${window.location.origin}/share/${shareInfo.id}`} className="w-full p-2 mt-2 bg-white border rounded-md" />
                       <p className="mt-2 font-semibold">1회용 비밀번호:</p>
-                      <input type="text" readOnly value={shareInfo.password} className="w-full p-2
-       mt-2 bg-white border rounded-md" />
+                      <input type="text" readOnly value={shareInfo.password} className="w-full p-2 mt-2 bg-white border rounded-md" />
                     </div>
                   )}
                 </div>
               </div>
-              <button onClick={handleCloseDetail} className="absolute top-4 right-4 text-gray-500
-       hover:text-gray-800 text-2xl">&times;</button>
+              <button onClick={handleCloseDetail} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
             </div>
           </motion.div>
         )}

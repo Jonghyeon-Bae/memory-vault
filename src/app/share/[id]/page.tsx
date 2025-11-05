@@ -41,6 +41,7 @@ export default function SharePage() {
 
     // 기억이 성공적으로 로드된 경우
     if (memory) {
+
         return (
             <main className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4 sm:p-8">
                 <div className="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
