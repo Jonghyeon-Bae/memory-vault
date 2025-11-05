@@ -45,9 +45,9 @@ export async function POST(request: Request): Promise<NextResponse> {
             throw new Error("링크 상태 업데이트에 실패했어요..")
         }
 
-        const { data: memory, error: memoryError } = await supabase
+        const { data: memory, error: memoryError } = await supabaseAdmin
             .from("memories")
-            .select("*")
+            .select("*",)
             .eq("id", sharedLink.memory_id)
             .single()
 
