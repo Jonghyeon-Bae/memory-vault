@@ -15,7 +15,7 @@ export default function NewMemoryPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!file) {
-            alert('이미지 파일을 선택해주세요.')
+            alert('사진을 선택해주세요.')
             return
         }
         setIsUploading(true)
