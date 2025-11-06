@@ -4,10 +4,6 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY
 
-console.log("Supabase URL:", supabaseUrl)
-console.log("Supabase Anon Key:", supabaseAnonKey)
-console.log("Supabase Service Key:", supabaseServiceKey)
-
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
     throw new Error(
         "Supabase URL, Anon Key, 또는 Service Key 환경 변수가 설정되지 않았어요."
