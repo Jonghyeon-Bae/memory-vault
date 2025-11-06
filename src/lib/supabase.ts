@@ -2,7 +2,11 @@ import { createClient } from "@supabase/supabase-js"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY
+const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY
+
+console.log("Supabase URL:", supabaseUrl)
+console.log("Supabase Anon Key:", supabaseAnonKey)
+console.log("Supabase Service Key:", supabaseServiceKey)
 
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
     throw new Error(
