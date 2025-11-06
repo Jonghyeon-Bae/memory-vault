@@ -4,9 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-        "Supabase URL, Anon Key, 또는 Service Key 환경 변수가 설정되지 않았어요."
-    )
+    throw new Error("Supabase URL, Anon Key 환경 변수가 설정되지 않았어요.")
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
