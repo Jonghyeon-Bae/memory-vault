@@ -25,7 +25,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                 { status: 404 }
             )
         }
-        if (sharedLink.isUsed) {
+        if (sharedLink.is_used) {
             return NextResponse.json(
                 { message: "이미 사용된 링크입니다." },
                 { status: 410 }
@@ -48,7 +48,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         const { data: memory, error: memoryError } = await supabaseAdmin
             .from("memories")
-            .select("*",)
+            .select("*")
             .eq("id", sharedLink.memory_id)
             .single()
 
