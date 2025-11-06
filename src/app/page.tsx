@@ -20,6 +20,7 @@ export default function HomePage() {
   const [isSharing, setIsSharing] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [booksPerPage, setBooksPerPage] = useState(5);
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const calculateBooksPerPage = () => {
@@ -93,6 +94,18 @@ export default function HomePage() {
     setSelectedId(null);
     setShareInfo(null);
   };
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+    } catch (e) {
+      alert('클립보드 복사에 실패했어요..')
+    }
+  }
 
   return (
     <main className="dream-background flex min-h-screen flex-col items-center text-white p-4 sm:p-8 overflow-hidden">
@@ -171,7 +184,12 @@ export default function HomePage() {
                   {shareInfo && (
                     <div className="mt-4 p-3 bg-gray-100 rounded-md text-sm text-gray-800">
                       <p className="font-semibold">공유 링크가 생성되었습니다:</p>
-                      <input type="text" readOnly value={`${window.location.origin}/share/${shareInfo.id}`} className="w-full p-2 mt-2 bg-white border rounded-md" />
+                      {copied && <span className="text-green-600 font-semibold">복사 완료!</span>}
+                      <input type="text"
+                        onClick={(e) => handleCopy(e.currentTarget.value)}
+                        readOnly
+                        value={`${window.location.origin}/share/${shareInfo.id}`}
+                        className="w-full p-2 mt-2 bg-white border rounded-md" />
                       <p className="mt-2 font-semibold">1회용 비밀번호:</p>
                       <input type="text" readOnly value={shareInfo.password} className="w-full p-2 mt-2 bg-white border rounded-md" />
                     </div>
