@@ -110,7 +110,7 @@ export default function HomePage() {
   return (
     <main className="dream-background flex min-h-screen flex-col items-center text-white p-4 sm:p-8 overflow-hidden">
       <h1
-        className="text-5xl sm:text-6xl font-normal my-8 sm:my-12 text-center tracking-wider"
+        className="text-4xl sm:text-5xl lg:text-6xl font-normal my-8 sm:my-12 text-center tracking-wider"
         style={{ textShadow: '0 0 8px rgba(255, 255, 255, 0.4), 0 0 12px rgba(180, 180, 255, 0.3)' }}
       >
         나의 기억 보관함
@@ -135,7 +135,7 @@ export default function HomePage() {
           </motion.button>
 
           <div className="relative w-full p-4 overflow-hidden">
-            <div className="flex items-end justify-center gap-4 h-80 border-b-[16px] border-t-[16px] border-[#4a2c2a] bg-black/30 rounded-lg p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.6)]">
+            <div className="flex items-end justify-center gap-4 h-72 sm:h-80 border-b-[16px] border-t-[16px] border-[#4a2c2a] bg-black/30 rounded-lg p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.6)]">
               <AnimatePresence mode="popLayout">
                 {displayedMemories.map((memory) => (
                   <motion.div
@@ -170,12 +170,12 @@ export default function HomePage() {
         {selectedMemory && (
           <motion.div layoutId={`book-${selectedMemory.id}`} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={handleCloseDetail}>
             <div className="relative w-full max-w-3xl h-auto max-h-[90vh] bg-white rounded-lg shadow-2xl flex flex-col md:flex-row overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              <div className="w-full md:w-1/2 h-64 md:h-auto"><img src={selectedMemory.imageUrl} alt={selectedMemory.title} className="w-full h-full object-cover" /></div>
+              <div className="w-full md:w-1/2 h-56 sm:h-64 md:h-auto"><img src={selectedMemory.imageUrl} alt={selectedMemory.title} className="w-full h-full object-cover" /></div>
               <div className="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedMemory.title}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">{selectedMemory.title}</h2>
                 <p className="text-sm text-gray-500 mb-6">{new Date(selectedMemory.createdAt).
                   toLocaleDateString('ko-KR')} 에 남겨진 기억</p>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap flex-grow">{selectedMemory.content}</p>
+                <p className="text-base text-gray-700 leading-relaxed whitespace-pre-wrap flex-grow">{selectedMemory.content}</p>
                 <div className="mt-6 pt-4 border-t">
                   <button onClick={() => handleShare(selectedMemory.id)} disabled={isSharing}
                     className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors duration-300 disabled:bg-gray-400">
@@ -183,15 +183,25 @@ export default function HomePage() {
                   </button>
                   {shareInfo && (
                     <div className="mt-4 p-3 bg-gray-100 rounded-md text-sm text-gray-800">
-                      <p className="font-semibold">공유 링크가 생성되었습니다:</p>
-                      {copied && <span className="text-green-600 font-semibold">복사 완료!</span>}
-                      <input type="text"
-                        onClick={(e) => handleCopy(e.currentTarget.value)}
+                      <div className="flex justify-between items-center">
+                        <p className="font-semibold">공유 링크가 생성되었습니다:</p>
+                        {copied && <span className="text-green-600 font-semibold">복사 완료!</span>}
+                      </div>
+                      <input
+                        type="text"
                         readOnly
                         value={`${window.location.origin}/share/${shareInfo.id}`}
-                        className="w-full p-2 mt-2 bg-white border rounded-md" />
+                        className="w-full p-2 mt-2 bg-white border rounded-md cursor-pointer hover:bg-gray-50"
+                        onClick={(e) => handleCopy(e.currentTarget.value)}
+                      />
                       <p className="mt-2 font-semibold">1회용 비밀번호:</p>
-                      <input type="text" readOnly value={shareInfo.password} className="w-full p-2 mt-2 bg-white border rounded-md" />
+                      <input
+                        type="text"
+                        readOnly
+                        value={shareInfo.password}
+                        className="w-full p-2 mt-2 bg-white border rounded-md cursor-pointer hover:bg-gray-50"
+                        onClick={(e) => handleCopy(e.currentTarget.value)}
+                      />
                     </div>
                   )}
                 </div>
