@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase-client';
 import { Memory } from '@/types';
 import Book from '@/compoments/Book';
 
