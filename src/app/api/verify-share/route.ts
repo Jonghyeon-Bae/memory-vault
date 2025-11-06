@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabase, supabaseAdmin } from "@/lib/supabase"
 
 export async function POST(request: Request): Promise<NextResponse> {
     try {
@@ -36,7 +36,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                 { status: 401 }
             )
         }
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseAdmin
             .from("shared_links")
             .update({ is_used: true })
             .eq("id", shareId)
@@ -45,9 +45,9 @@ export async function POST(request: Request): Promise<NextResponse> {
             throw new Error("링크 상태 업데이트에 실패했어요..")
         }
 
-        const { data: memory, error: memoryError } = await supabase
+        const { data: memory, error: memoryError } = await supabaseAdmin
             .from("memories")
-            .select("*")
+            .select("*",)
             .eq("id", sharedLink.memory_id)
             .single()
 
