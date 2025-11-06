@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabaseAdmin } from "@/lib/supabase-admin"
 
 export async function POST(request: Request): Promise<NextResponse> {
     try {
@@ -16,7 +16,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             100000 + Math.random() * 900000
         ).toString()
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from("shared_links")
             .insert({
                 memory_id: memoryId,
